@@ -1,6 +1,12 @@
+const { env } = process;
+
+const language = env.LANG || env.LANGUAGE || env.LC_ALL || env.LC_MESSAGES;
+const languageShort = language && language.split('_')[0];
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 export {
-  // eslint-disable-next-line import/prefer-default-export
+  language,
+  languageShort,
   isDevelopment,
 };
