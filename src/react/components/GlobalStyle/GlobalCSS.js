@@ -10,7 +10,7 @@ html {
   font-family: sans-serif;
   font-size: 16px;
   background-color: ${theme.backgroundColor};
-  color: ${theme.color};
+  color: ${theme.textColor};
 }
 
 body {
