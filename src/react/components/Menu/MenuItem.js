@@ -1,24 +1,32 @@
-import styled from 'styled-components';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
+import MenuButton from './MenuButton';
 
-const MenuItem = styled.button`
-${({ theme }) => `
--webkit-app-region: no-drag;
-padding: 2px 6px;
-border: none;
-background: none;
-color: ${theme.menu.textColor || theme.textColor};
+const MenuItem = ({
+  onSelect,
+  active,
+  message,
+  defaultMessage,
+  children,
+}) => (
+  <MenuButton onClick={onSelect} onMouseEnter={onSelect} className={active ? 'active' : ''}>
+    <FormattedMessage id={message} defaultMessage={defaultMessage} />
+    { children }
+  </MenuButton>
+);
 
-&:hover {
-  background-color: ${theme.menu.item.hover.backgroundColor};
-  color: ${theme.menu.item.textColor || theme.menu.item.hover.textColor || theme.menu.textColor || theme.textColor};
-}
-&:focus, &:active {
-  background-color: ${theme.menu.item.focus.backgroundColor};
-  color: ${theme.menu.item.textColor || theme.menu.item.focus.textColor || theme.menu.textColor || theme.textColor};
-}
+MenuItem.propTypes = {
+  onSelect: PropTypes.func.isRequired,
+  active: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  defaultMessage: PropTypes.string,
+  children: PropTypes.node,
+};
 
-outline: none;
-`}
-`;
+MenuItem.defaultProps = {
+  defaultMessage: '',
+  children: null,
+};
 
 export default MenuItem;

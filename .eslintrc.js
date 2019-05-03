@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   extends: 'airbnb',
   rules: {
     'react/jsx-filename-extension': false,
@@ -15,4 +15,10 @@ module.exports = {
   globals: {
     __static: true,
   },
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  config.rules['no-console'] = 0;
 }
+
+module.exports = config;

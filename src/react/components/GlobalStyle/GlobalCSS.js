@@ -16,7 +16,15 @@ html {
 body {
   padding: 0;
   margin: 0;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+
+  #app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 }
 `}
 `;
