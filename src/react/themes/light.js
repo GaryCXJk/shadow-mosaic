@@ -1,5 +1,5 @@
 import defaultTheme from './default';
 
-export default {
-  ...defaultTheme,
-};
+const merge = require('deepmerge');
+
+export default merge(defaultTheme, {});

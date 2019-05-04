@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Menu from './components/Menu';
 import GlobalStyle from './containers/GlobalStyle';
@@ -11,14 +11,14 @@ import Routes from './pages/Routes';
 const App = () => (
   <Provider store={store}>
     <Language>
-      <BrowserRouter>
+      <Router>
         <GlobalStyle>
           <Menu />
           <PageContainer>
             <Routes />
           </PageContainer>
         </GlobalStyle>
-      </BrowserRouter>
+      </Router>
     </Language>
   </Provider>
 );
