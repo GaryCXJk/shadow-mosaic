@@ -30,7 +30,7 @@ class WindowManager {
       window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}${location}`);
     } else {
       window.loadURL(formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, `index.html${location}`),
         protocol: 'file',
         slashes: true,
       }));

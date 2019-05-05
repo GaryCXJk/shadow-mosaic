@@ -15,6 +15,16 @@ const config = {
   globals: {
     __static: true,
   },
+
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['common', './src/common'],
+        ],
+      }
+    },
+  },
 };
 
 if (process.env.NODE_ENV !== 'production') {

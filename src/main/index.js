@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app } from 'electron';
+import WindowManager from './WindowManager';
 import { isDevelopment } from '../constants/general';
-import WindowManager from '../helpers/WindowManager';
 
 global.WindowManager = WindowManager;
 
