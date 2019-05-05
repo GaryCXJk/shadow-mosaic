@@ -1,36 +1,17 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
-import { format as formatUrl } from 'url';
+import { app } from 'electron';
 import { isDevelopment } from '../constants/general';
+import WindowManager from '../helpers/WindowManager';
 
-// global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow;
+global.WindowManager = WindowManager;
 
 function createMainWindow() {
-  const window = new BrowserWindow({
-    webPreferences: {
-      nodeIntegration: true,
-    },
-    frame: false,
+  const window = WindowManager.create('main', {
+    isDevelopment,
   });
 
-  if (isDevelopment) {
-    window.webContents.openDevTools();
-  }
-
-  if (isDevelopment) {
-    window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
-  } else {
-    window.loadURL(formatUrl({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file',
-      slashes: true,
-    }));
-  }
-
   window.on('closed', () => {
-    mainWindow = null;
+    WindowManager.destroy('main');
     app.quit();
   });
 
@@ -40,8 +21,6 @@ function createMainWindow() {
       window.focus();
     });
   });
-
-  return window;
 }
 
 // quit application when all windows are closed
@@ -54,12 +33,12 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   // on macOS it is common to re-create a window even after all windows have been closed
-  if (mainWindow === null) {
-    mainWindow = createMainWindow();
+  if (WindowManager.get('main') === null) {
+    createMainWindow();
   }
 });
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
-  mainWindow = createMainWindow();
+  createMainWindow();
 });

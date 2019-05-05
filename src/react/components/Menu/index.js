@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { remote } from 'electron';
+import PropTypes from 'prop-types';
 import {
   FiMaximize,
   FiMinimize,
@@ -12,10 +11,13 @@ import MenuDrag from './MenuDrag';
 import MenuList from './MenuList';
 import MenuButton from './MenuButton';
 import MenuTitle from './MenuTitle';
-import menu from '../../../constants/menu';
+import WindowManager from '../../helpers/WindowManager';
 
+/**
+ * Maximizes the current window screen.
+ */
 const maximizeApp = () => {
-  const currentWindow = remote.getCurrentWindow();
+  const currentWindow = WindowManager.get('main');
   if (currentWindow.isMaximized()) {
     currentWindow.unmaximize();
   } else {
@@ -24,13 +26,16 @@ const maximizeApp = () => {
 };
 
 const minimizeApp = () => {
-  remote.getCurrentWindow().minimize();
+  WindowManager.get('main').minimize();
 };
 
 const closeApp = () => {
-  remote.getCurrentWindow().close();
+  WindowManager.get('main').close();
 };
 
+/**
+ * Creates a Menu.
+ */
 class Menu extends Component {
   constructor(props) {
     super(props);
@@ -43,11 +48,11 @@ class Menu extends Component {
   }
 
   componentDidMount() {
-    remote.getCurrentWindow().on('resize', this.onResize);
+    WindowManager.get('main').on('resize', this.onResize);
   }
 
   componentWillUnmount() {
-    remote.getCurrentWindow().off('resize', this.onResize);
+    WindowManager.get('main').off('resize', this.onResize);
   }
 
   onMenuChanged(value) {
@@ -61,9 +66,10 @@ class Menu extends Component {
   }
 
   render() {
+    const { menu } = this.props;
     const { open } = this.state;
 
-    const isMaximized = remote.getCurrentWindow().isMaximized();
+    const isMaximized = WindowManager.get('main').isMaximized();
 
     return (
       <MenuBar>
@@ -79,5 +85,11 @@ class Menu extends Component {
     );
   }
 }
+
+Menu.propTypes = {
+  menu: PropTypes.arrayOf(
+    PropTypes.shape(),
+  ).isRequired,
+};
 
 export default Menu;

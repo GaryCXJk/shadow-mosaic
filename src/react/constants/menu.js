@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { remote } from 'electron';
+import WindowManager from '../helpers/WindowManager';
 
 export default [
   {
@@ -10,7 +10,7 @@ export default [
         id: 'exit',
         defaultMessage: 'Exit',
         action: () => {
-          remote.getCurrentWindow().close();
+          WindowManager.get('main').close();
         },
       },
     ],

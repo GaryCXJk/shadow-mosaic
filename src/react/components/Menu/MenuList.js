@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { remote } from 'electron';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
 import MenuButton from './MenuButton';
+import WindowManager from '../../helpers/WindowManager';
 
 class MenuList extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class MenuList extends Component {
     this.onToggleItem = this.onToggleItem.bind(this);
     this.onClose = this.onClose.bind(this);
     this.addItem = this.addItem.bind(this);
-    this.window = remote.getCurrentWindow();
+    this.window = WindowManager.get('main');
 
     this.lastClicked = null;
   }
@@ -62,11 +62,11 @@ class MenuList extends Component {
     const { onChange } = this.props;
     const { open } = this.state;
     if (event.type !== 'mouseenter' || open) {
+      const openState = (event.type === 'mouseenter' || open !== item) && item;
       this.setState({
-        open: item,
+        open: openState,
       });
       this.lastClicked = event.target;
-      event.target.blur();
       if (onChange) {
         onChange(!!item);
       }
@@ -81,6 +81,7 @@ class MenuList extends Component {
       defaultMessage,
       options = null,
       action = null,
+      location = null,
     } = option;
     const { onToggleItem } = this;
 
@@ -106,6 +107,14 @@ class MenuList extends Component {
         <MenuButton key={fullId} onClick={fullAction}>
           <FormattedMessage id={`menu.${fullId}`} defaultMessage={defaultMessage} />
         </MenuButton>
+      );
+    }
+
+    if (location) {
+      return (
+        <Link key={fullId} to={location}>
+          <FormattedMessage id={`menu.${fullId}`} defaultMessage={defaultMessage} />
+        </Link>
       );
     }
 

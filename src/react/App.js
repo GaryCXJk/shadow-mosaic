@@ -7,13 +7,14 @@ import Language from './containers/Language';
 import store from './store';
 import PageContainer from './components/PageContainer';
 import Routes from './pages/Routes';
+import menu from './constants/menu';
 
 const App = () => (
   <Provider store={store}>
     <Language>
       <Router>
         <GlobalStyle>
-          <Menu />
+          <Menu menu={menu} />
           <PageContainer>
             <Routes />
           </PageContainer>
