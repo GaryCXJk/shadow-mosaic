@@ -1,14 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app } from 'electron';
 import WindowManager from './WindowManager';
-import { isDevelopment } from '../constants/general';
 
 global.WindowManager = WindowManager;
 
 function createMainWindow() {
-  const window = WindowManager.create('main', {
-    isDevelopment,
-  });
+  const window = WindowManager.create('main');
 
   window.on('closed', () => {
     WindowManager.destroy('main');

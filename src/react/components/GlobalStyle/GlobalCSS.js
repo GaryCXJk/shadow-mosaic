@@ -18,6 +18,7 @@ body {
   margin: 0;
   height: 100vh;
   width: 100%;
+  -webkit-user-select: none;
 
   #app {
     width: 100%;

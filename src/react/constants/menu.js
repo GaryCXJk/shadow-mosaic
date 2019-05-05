@@ -18,5 +18,21 @@ export default [
   {
     id: 'help',
     defaultMessage: 'Help',
+    options: [
+      {
+        id: 'about',
+        defaultMessage: 'About',
+        action: () => {
+          WindowManager.create('about', {
+            modalParent: 'main',
+            location: '/about',
+            width: 320,
+            height: 500,
+            hideDevtools: true,
+            resizable: false,
+          });
+        },
+      },
+    ],
   },
 ];

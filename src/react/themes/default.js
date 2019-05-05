@@ -15,4 +15,14 @@ export default {
       },
     },
   },
+  button: {
+    textColor: '#000',
+    backgroundColor: '#eee',
+    hover: {
+      backgroundColor: '#f8f8f8',
+    },
+    focus: {
+      backgroundColor: '#dedede',
+    },
+  },
 };

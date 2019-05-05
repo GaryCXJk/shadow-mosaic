@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 import {
   FiMaximize,
   FiMinimize,
@@ -14,26 +15,6 @@ import MenuTitle from './MenuTitle';
 import WindowManager from '../../helpers/WindowManager';
 
 /**
- * Maximizes the current window screen.
- */
-const maximizeApp = () => {
-  const currentWindow = WindowManager.get('main');
-  if (currentWindow.isMaximized()) {
-    currentWindow.unmaximize();
-  } else {
-    currentWindow.maximize();
-  }
-};
-
-const minimizeApp = () => {
-  WindowManager.get('main').minimize();
-};
-
-const closeApp = () => {
-  WindowManager.get('main').close();
-};
-
-/**
  * Creates a Menu.
  */
 class Menu extends Component {
@@ -45,14 +26,19 @@ class Menu extends Component {
 
     this.onResize = this.onResize.bind(this);
     this.onMenuChanged = this.onMenuChanged.bind(this);
+    this.onMinimize = this.onMinimize.bind(this);
+    this.onMaximize = this.onMaximize.bind(this);
+    this.onClose = this.onClose.bind(this);
   }
 
   componentDidMount() {
-    WindowManager.get('main').on('resize', this.onResize);
+    const { window: w } = this.props;
+    WindowManager.get(w).on('resize', this.onResize);
   }
 
   componentWillUnmount() {
-    WindowManager.get('main').off('resize', this.onResize);
+    const { window: w } = this.props;
+    WindowManager.get(w).off('resize', this.onResize);
   }
 
   onMenuChanged(value) {
@@ -65,22 +51,59 @@ class Menu extends Component {
     this.forceUpdate();
   }
 
+  onMinimize() {
+    const { window: w } = this.props;
+    WindowManager.get(w).minimize();
+  }
+
+  /**
+   * Triggered when the current window is maximized.
+   */
+  onMaximize() {
+    const { window: w } = this.props;
+    const currentWindow = WindowManager.get(w);
+    if (currentWindow.isMaximized()) {
+      currentWindow.unmaximize();
+    } else {
+      currentWindow.maximize();
+    }
+  }
+
+  onClose() {
+    const { window: w, onClose } = this.props;
+    WindowManager.get(w).close();
+    if (onClose) {
+      onClose();
+    }
+  }
+
   render() {
-    const { menu } = this.props;
+    const {
+      menu,
+      title,
+      titleId,
+      canMinimalize,
+      canMaximize,
+      window: w,
+    } = this.props;
     const { open } = this.state;
 
-    const isMaximized = WindowManager.get('main').isMaximized();
+    const currentWindow = WindowManager.get(w);
+    const isMaximized = currentWindow.isMaximized();
+    const maximize = canMaximize && currentWindow.isResizable();
 
     return (
       <MenuBar>
         <MenuDrag isVisible={!open} />
-        <MenuList options={menu} onChange={this.onMenuChanged} root />
-        <MenuTitle>Shadow Mosaic</MenuTitle>
-        <MenuButton onClick={minimizeApp}><FiMinus /></MenuButton>
-        <MenuButton onClick={maximizeApp}>
-          {isMaximized ? <FiMinimize /> : <FiMaximize />}
-        </MenuButton>
-        <MenuButton onClick={closeApp}><FiX /></MenuButton>
+        {menu ? <MenuList options={menu} onChange={this.onMenuChanged} root /> : ''}
+        <MenuTitle>{titleId ? <FormattedMessage id={titleId} defaultMessage={title || ''} /> : title || ''}</MenuTitle>
+        {canMinimalize ? <MenuButton onClick={this.onMinimize}><FiMinus /></MenuButton> : ''}
+        {maximize ? (
+          <MenuButton onClick={this.onMaximize}>
+            {isMaximized ? <FiMinimize /> : <FiMaximize />}
+          </MenuButton>
+        ) : ''}
+        <MenuButton onClick={this.onClose}><FiX /></MenuButton>
       </MenuBar>
     );
   }
@@ -89,7 +112,23 @@ class Menu extends Component {
 Menu.propTypes = {
   menu: PropTypes.arrayOf(
     PropTypes.shape(),
-  ).isRequired,
+  ),
+  title: PropTypes.string,
+  titleId: PropTypes.string,
+  window: PropTypes.string,
+  onClose: PropTypes.func,
+  canMinimalize: PropTypes.bool,
+  canMaximize: PropTypes.bool,
+};
+
+Menu.defaultProps = {
+  menu: null,
+  title: '',
+  titleId: '',
+  window: '',
+  onClose: null,
+  canMinimalize: true,
+  canMaximize: true,
 };
 
 export default Menu;

@@ -19,4 +19,14 @@ export default merge(defaultTheme, {
       },
     },
   },
+  button: {
+    textColor: '#fff',
+    backgroundColor: '#2b3142',
+    hover: {
+      backgroundColor: '#212633',
+    },
+    focus: {
+      backgroundColor: '#353c51',
+    },
+  },
 });

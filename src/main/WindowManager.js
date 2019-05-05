@@ -2,8 +2,18 @@
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
+import { isDevelopment } from '../constants/general';
 
 const windows = {};
+const copyable = [
+  'width',
+  'height',
+  'minWidth',
+  'maxWidth',
+  'minHeight',
+  'maxHeight',
+  'resizable',
+];
 
 class WindowManager {
   static get(windowName, createIfNotExist = false) {
@@ -14,19 +24,35 @@ class WindowManager {
   }
 
   static create(windowName, options = {}) {
-    const window = new BrowserWindow({
+    const windowOptions = {
       webPreferences: {
         nodeIntegration: true,
       },
       frame: false,
+    };
+    if (options.modalParent) {
+      const parentWindow = this.get(options.modalParent);
+      if (parentWindow) {
+        windowOptions.modal = true;
+        windowOptions.parent = parentWindow;
+      }
+    }
+    copyable.forEach((prop) => {
+      if (typeof options[prop] !== 'undefined') {
+        windowOptions[prop] = options[prop];
+      }
     });
+
+    const window = new BrowserWindow(windowOptions);
 
     windows[windowName] = window;
 
     const location = options.location ? `#${options.location}` : '';
 
-    if (options.isDevelopment) {
-      window.webContents.openDevTools();
+    if (isDevelopment) {
+      if (!options.hideDevtools) {
+        window.webContents.openDevTools();
+      }
       window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}${location}`);
     } else {
       window.loadURL(formatUrl({

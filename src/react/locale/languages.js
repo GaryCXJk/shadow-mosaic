@@ -1,4 +1,4 @@
 export default {
-  'language.en': 'Engliish',
+  'language.en': 'English',
   'language.nl': 'Nederlands',
 };
