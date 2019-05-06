@@ -1,6 +1,7 @@
 const CONFIG_INIT = 'CONFIG_INIT';
+const CONFIG_SET_THEME = 'CONFIG_SET_THEME';
 
 export {
-  // eslint-disable-next-line import/prefer-default-export
   CONFIG_INIT,
+  CONFIG_SET_THEME,
 };

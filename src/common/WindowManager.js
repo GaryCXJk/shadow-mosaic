@@ -74,6 +74,17 @@ class WindowManager {
     windows[windowName] = null;
     delete windows[windowName];
   }
+
+  static emit(event, callback) {
+    Object.keys(windows).forEach((windowName) => {
+      const win = windows[windowName];
+      if (win && !win.isDestroyed()) {
+        win.webContents.send(event, callback);
+      } else if (win) {
+        this.destroy(windowName);
+      }
+    });
+  }
 }
 
 export default WindowManager;

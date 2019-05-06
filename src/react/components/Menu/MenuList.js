@@ -7,6 +7,7 @@ import MenuDivider from './MenuDivider';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
 import MenuButton from './MenuButton';
+import MenuIcon from './MenuIcon';
 
 class MenuList extends Component {
   constructor(props) {
@@ -91,6 +92,7 @@ class MenuList extends Component {
       options = null,
       action = null,
       location = null,
+      icon = null,
     } = option;
     const { onToggleItem } = this;
 
@@ -118,6 +120,7 @@ class MenuList extends Component {
       };
       return (
         <MenuButton key={fullId} onClick={fullAction}>
+          {icon && <MenuIcon icon={icon} />}
           <FormattedMessage id={`menu.${fullId}`} defaultMessage={defaultMessage} />
         </MenuButton>
       );
@@ -138,6 +141,7 @@ class MenuList extends Component {
         message={`menu.${fullId}`}
         defaultMessage={defaultMessage}
         active={active}
+        icon={icon}
       >
         {children}
       </MenuItem>

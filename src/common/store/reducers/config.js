@@ -13,6 +13,11 @@ const configReducer = (state = initialState, action) => {
         ...state,
         ...action.state,
       };
+    case CONFIG.CONFIG_SET_THEME:
+      return {
+        ...state,
+        theme: action.theme,
+      };
     default:
       return state;
   }

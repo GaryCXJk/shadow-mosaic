@@ -1,12 +1,21 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app } from 'electron';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import installExtension, {
+  REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS,
+} from 'electron-devtools-installer';
 import ConfigManager from 'common/ConfigManager';
-import WindowManager from './WindowManager';
+import WindowManager from 'common/WindowManager';
 
 global.ConfigManager = ConfigManager;
 global.WindowManager = WindowManager;
 
+installExtension(REACT_DEVELOPER_TOOLS);
+installExtension(REDUX_DEVTOOLS);
+
 function createMainWindow() {
+  ConfigManager.load();
+
   const window = WindowManager.create('main');
 
   window.on('closed', () => {

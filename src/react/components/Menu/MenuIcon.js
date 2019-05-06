@@ -12,7 +12,9 @@ const MenuIcon = styled(MenuIconBase)`
 width: 1em;
 height: 1em;
 display: inline-block;
+text-align: center;
 vertical-align: middle;
+margin-right: 4px;
 `;
 
 MenuIconBase.propTypes = {
