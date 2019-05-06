@@ -3,11 +3,16 @@ import { ipcMain, ipcRenderer } from 'electron';
 import WindowManager from './WindowManager';
 import { languageShort } from '../constants/general';
 
+// We need both fs and path to load in and save the config file.
 const fs = require('fs');
 const path = require('path');
 
+// We'll need to distinguish between renderer and main process later on.
 const isRenderer = process && process.type === 'renderer';
 
+/* This variable stores the ConfigManager data, since we would only need to load
+ * it once. It also stores a default configuration, in case loading the file fails.
+ */
 const configStore = {
   defaultConfig: {
     config: {
@@ -17,10 +22,16 @@ const configStore = {
   },
 };
 
+/**
+ * Manages the configuration.
+ */
 class ConfigManager {
+  /**
+   * Loads the configuration file.
+   */
   static load() {
     if (isRenderer) {
-      ipcRenderer.sendSync('config-manager-load');
+      ipcRenderer.send('config-manager-load');
     }
 
     if (configStore.data) {
@@ -36,6 +47,11 @@ class ConfigManager {
     });
   }
 
+  /**
+   * Retrieves the configuration data. When the renderer calls it, it will send
+   * a request to the main process synchronously, so that it will retrieve the
+   * data immediately instead of having to wait for it.
+   */
   static get() {
     if (isRenderer) {
       return ipcRenderer.sendSync('config-manager-get');
@@ -43,18 +59,35 @@ class ConfigManager {
     return configStore.data;
   }
 
-  static getIpc(event) {
+  /**
+   * Retrieves the configuration data. This method will only be called by the
+   * main process, and will send back immediately.
+   */
+  static getMain(event) {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = configStore.data;
   }
 
+  /**
+   * Sets a new configuration state. This is purely meant for the renderer.
+   */
   static set(state) {
     if (isRenderer) {
       ipcRenderer.send('config-manager-set', state);
+    } else {
+      configStore.data = {
+        ...configStore.data,
+        ...state,
+      };
     }
   }
 
-  static setIpc(_event, state) {
+  /**
+   * Sets a new configuration state. This is purely meant for the main process.
+   * Once it's done, it will send back a message to every application window that
+   * is currently open.
+   */
+  static setMain(_event, state) {
     configStore.data = {
       ...configStore.data,
       ...state,
@@ -64,10 +97,13 @@ class ConfigManager {
   }
 }
 
+/* We'll want to attach listeners to the main process for any requests that the
+ * renderers send.
+ */
 if (!isRenderer) {
   ipcMain.on('config-manager-load', ConfigManager.load);
-  ipcMain.on('config-manager-get', ConfigManager.getIpc);
-  ipcMain.on('config-manager-set', ConfigManager.setIpc);
+  ipcMain.on('config-manager-get', ConfigManager.getMain);
+  ipcMain.on('config-manager-set', ConfigManager.setMain);
 }
 
 export default ConfigManager;

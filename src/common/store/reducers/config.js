@@ -1,5 +1,8 @@
 import { languageShort } from '@/constants/general';
-import * as CONFIG from '@store/actions/config';
+import {
+  CONFIG_INIT,
+  CONFIG_SET_THEME,
+} from '@store/actions/config';
 
 const initialState = {
   language: languageShort || 'en',
@@ -8,12 +11,12 @@ const initialState = {
 
 const configReducer = (state = initialState, action) => {
   switch (action.type) {
-    case CONFIG.CONFIG_INIT:
+    case CONFIG_INIT:
       return {
         ...state,
         ...action.state,
       };
-    case CONFIG.CONFIG_SET_THEME:
+    case CONFIG_SET_THEME:
       return {
         ...state,
         theme: action.theme,
