@@ -11,5 +11,6 @@ export default {
   'menu.file.exit': 'Exit',
   'menu.help': 'Help',
   'menu.help.about': 'About',
+  'dashboard.recent_projects': 'Recent projects',
   'help.about': 'About Shadow Mosaic',
 };

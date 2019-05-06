@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import GlobalStyle from '../components/GlobalStyle';
-import * as themes from '../themes';
-import defaultTheme from '../themes/default';
+import GlobalStyle from '@components/GlobalStyle';
+import * as themes from '@themes';
+import defaultTheme from '@themes/default';
 
 const mapStateToProps = (state) => {
   const { config } = state;

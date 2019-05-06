@@ -2,10 +2,11 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
+import WindowManager from '@helpers/WindowManager';
+import MenuDivider from './MenuDivider';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
 import MenuButton from './MenuButton';
-import WindowManager from '../../helpers/WindowManager';
 
 class MenuList extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class MenuList extends Component {
 
     this.onWindowClick = this.onWindowClick.bind(this);
     this.onToggleItem = this.onToggleItem.bind(this);
+    this.onWindowClose = this.onWindowClose.bind(this);
     this.onClose = this.onClose.bind(this);
     this.addItem = this.addItem.bind(this);
     this.window = WindowManager.get('main');
@@ -27,12 +29,13 @@ class MenuList extends Component {
     window.addEventListener('click', this.onWindowClick);
     window.addEventListener('blur', this.onWindowClick);
     this.window.on('focus', this.onWindowClick);
+    this.window.on('close', this.onWindowClose);
   }
 
   componentWillUnmount() {
     window.removeEventListener('click', this.onWindowClick);
     window.removeEventListener('blur', this.onWindowClick);
-    this.window.off('focus', this.onWindowClick);
+    this.onWindowClose();
   }
 
   onWindowClick(event) {
@@ -43,6 +46,11 @@ class MenuList extends Component {
     if (target !== this.lastClicked) {
       this.onClose();
     }
+  }
+
+  onWindowClose() {
+    this.window.off('focus', this.onWindowClick);
+    this.window.off('close', this.onWindowClose);
   }
 
   onClose() {
@@ -73,26 +81,31 @@ class MenuList extends Component {
     }
   }
 
-  addItem(option) {
+  addItem(option, index) {
     const { prefix } = this.props;
     const { open } = this.state;
     const {
-      id,
-      defaultMessage,
+      type = null,
+      id = null,
+      defaultMessage = null,
       options = null,
       action = null,
       location = null,
     } = option;
     const { onToggleItem } = this;
 
-    const fullId = prefix ? `${prefix}.${id}` : id;
+    const fullId = prefix ? `${prefix}.${id || `dv_${index}`}` : id || `dv_${index}`;
+    if (type === 'divider') {
+      return <MenuDivider key={fullId} />;
+    }
     const active = id === open;
     const onSelect = event => onToggleItem(id, event);
 
     const children = [];
 
     if (options && active) {
-      children.push(<MenuList key={`${fullId}._`} options={options} prefix={fullId} onClose={this.onClose} />);
+      const realOptions = (options && {}.toString.call(options) === '[object Function]' ? options() : options);
+      children.push(<MenuList key={`${fullId}._`} options={realOptions} prefix={fullId} onClose={this.onClose} />);
     }
 
     if (action) {

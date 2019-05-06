@@ -36,6 +36,11 @@ class WindowManager {
         windowOptions.modal = true;
         windowOptions.parent = parentWindow;
       }
+    } else if (options.parent) {
+      const parentWindow = this.get(options.parent);
+      if (parentWindow) {
+        windowOptions.parent = parentWindow;
+      }
     }
     copyable.forEach((prop) => {
       if (typeof options[prop] !== 'undefined') {

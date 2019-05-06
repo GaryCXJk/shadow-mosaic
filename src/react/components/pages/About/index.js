@@ -1,7 +1,7 @@
 import React from 'react';
-import AboutButtons from './AboutButtons';
-import AboutContainer from './AboutContainer';
-import AboutText from './AboutText';
+import AboutButtons from './elements/AboutButtons';
+import AboutContainer from './elements/AboutContainer';
+import AboutText from './elements/AboutText';
 
 const About = () => (
   <AboutContainer>

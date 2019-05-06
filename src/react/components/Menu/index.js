@@ -7,12 +7,12 @@ import {
   FiMinus,
   FiX,
 } from 'react-icons/fi';
+import WindowManager from '@helpers/WindowManager';
 import MenuBar from './MenuBar';
 import MenuDrag from './MenuDrag';
 import MenuList from './MenuList';
 import MenuButton from './MenuButton';
 import MenuTitle from './MenuTitle';
-import WindowManager from '../../helpers/WindowManager';
 
 /**
  * Creates a Menu.
@@ -25,6 +25,7 @@ class Menu extends Component {
     };
 
     this.onResize = this.onResize.bind(this);
+    this.onWindowClose = this.onWindowClose.bind(this);
     this.onMenuChanged = this.onMenuChanged.bind(this);
     this.onMinimize = this.onMinimize.bind(this);
     this.onMaximize = this.onMaximize.bind(this);
@@ -33,12 +34,20 @@ class Menu extends Component {
 
   componentDidMount() {
     const { window: w } = this.props;
-    WindowManager.get(w).on('resize', this.onResize);
+    const currentWindow = WindowManager.get(w);
+    currentWindow.on('resize', this.onResize);
+    currentWindow.on('close', this.onWindowClose);
   }
 
   componentWillUnmount() {
+    this.onWindowClose();
+  }
+
+  onWindowClose() {
     const { window: w } = this.props;
-    WindowManager.get(w).off('resize', this.onResize);
+    const currentWindow = WindowManager.get(w);
+    currentWindow.off('resize', this.onResize);
+    currentWindow.off('close', this.onWindowClose);
   }
 
   onMenuChanged(value) {

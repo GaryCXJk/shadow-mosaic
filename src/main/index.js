@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app } from 'electron';
+import ConfigManager from 'common/ConfigManager';
 import WindowManager from './WindowManager';
 
+global.ConfigManager = ConfigManager;
 global.WindowManager = WindowManager;
 
 function createMainWindow() {

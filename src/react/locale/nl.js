@@ -7,4 +7,5 @@ addLocaleData(en);
 export default {
   ...enData,
   'menu.file': 'Bestand',
+  'dashboard.recent_projects': 'Recente projecten',
 };

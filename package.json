@@ -43,6 +43,12 @@
   "electronWebpack": {
     "whiteListedModules": [
       "react-redux"
-    ]
+    ],
+    "main": {
+      "webpackConfig": "webpack.additions.config.js"
+    },
+    "renderer": {
+      "webpackConfig": "webpack.additions.config.js"
+    }
   }
 }

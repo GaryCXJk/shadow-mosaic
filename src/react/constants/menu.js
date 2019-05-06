@@ -1,11 +1,42 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import WindowManager from '../helpers/WindowManager';
+import ConfigManager from '@helpers/ConfigManager';
+import WindowManager from '@helpers/WindowManager';
+import * as themes from '@themes';
+
+const showThemes = () => {
+  const items = [];
+
+  console.log(ConfigManager.getStore());
+
+  Object.keys(themes).forEach((themeKey) => {
+    const theme = themes[themeKey];
+    const item = {
+      id: theme.nameId,
+      defaultMessage: theme.name,
+    };
+    items.push(item);
+  });
+  return items;
+};
 
 export default [
   {
     id: 'file',
     defaultMessage: 'File',
     options: [
+      {
+        id: 'settings',
+        defaultMessage: 'Settings',
+        action: () => {
+          WindowManager.create('settings', {
+            parent: 'main',
+            location: '/settings',
+            hideDevtools: true,
+          });
+        },
+      },
+      {
+        type: 'divider',
+      },
       {
         id: 'exit',
         defaultMessage: 'Exit',
@@ -14,6 +45,11 @@ export default [
         },
       },
     ],
+  },
+  {
+    id: 'theme',
+    defaultMessage: 'Theme',
+    options: showThemes,
   },
   {
     id: 'help',
