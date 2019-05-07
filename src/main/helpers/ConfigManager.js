@@ -1,14 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ipcMain, ipcRenderer } from 'electron';
-import WindowManager from './WindowManager';
-import { languageShort } from '../constants/general';
+import { ipcMain } from 'electron';
+import { languageShort } from 'common/constants/general';
+import WindowManager from 'common/helpers/WindowManager';
 
 // We need both fs and path to load in and save the config file.
 const fs = require('fs');
 const path = require('path');
-
-// We'll need to distinguish between renderer and main process later on.
-const isRenderer = process && process.type === 'renderer';
 
 /* This variable stores the ConfigManager data, since we would only need to load
  * it once. It also stores a default configuration, in case loading the file fails.
@@ -30,10 +27,6 @@ class ConfigManager {
    * Loads the configuration file.
    */
   static load() {
-    if (isRenderer) {
-      ipcRenderer.send('config-manager-load');
-    }
-
     if (configStore.data) {
       WindowManager.emit('store-update', configStore.data);
     }
@@ -53,9 +46,6 @@ class ConfigManager {
    * data immediately instead of having to wait for it.
    */
   static get() {
-    if (isRenderer) {
-      return ipcRenderer.sendSync('config-manager-get');
-    }
     return configStore.data;
   }
 
@@ -72,14 +62,10 @@ class ConfigManager {
    * Sets a new configuration state. This is purely meant for the renderer.
    */
   static set(state) {
-    if (isRenderer) {
-      ipcRenderer.send('config-manager-set', state);
-    } else {
-      configStore.data = {
-        ...configStore.data,
-        ...state,
-      };
-    }
+    configStore.data = {
+      ...configStore.data,
+      ...state,
+    };
   }
 
   /**
@@ -100,10 +86,8 @@ class ConfigManager {
 /* We'll want to attach listeners to the main process for any requests that the
  * renderers send.
  */
-if (!isRenderer) {
-  ipcMain.on('config-manager-load', ConfigManager.load);
-  ipcMain.on('config-manager-get', ConfigManager.getMain);
-  ipcMain.on('config-manager-set', ConfigManager.setMain);
-}
+ipcMain.on('config-manager-load', ConfigManager.load);
+ipcMain.on('config-manager-get', ConfigManager.getMain);
+ipcMain.on('config-manager-set', ConfigManager.setMain);
 
 export default ConfigManager;

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
-import WindowManager from '@helpers/WindowManager';
+import WindowManager from 'common/helpers/WindowManager';
 import MenuDivider from './MenuDivider';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
@@ -88,6 +88,7 @@ class MenuList extends Component {
     const {
       type = null,
       id = null,
+      messageId = null,
       defaultMessage = null,
       options = null,
       action = null,
@@ -121,7 +122,7 @@ class MenuList extends Component {
       return (
         <MenuButton key={fullId} onClick={fullAction}>
           {icon && <MenuIcon icon={icon} />}
-          <FormattedMessage id={`menu.${fullId}`} defaultMessage={defaultMessage} />
+          <FormattedMessage id={messageId || `menu.${fullId}`} defaultMessage={defaultMessage} />
         </MenuButton>
       );
     }
@@ -129,7 +130,7 @@ class MenuList extends Component {
     if (location) {
       return (
         <Link key={fullId} to={location}>
-          <FormattedMessage id={`menu.${fullId}`} defaultMessage={defaultMessage} />
+          <FormattedMessage id={messageId || `menu.${fullId}`} defaultMessage={defaultMessage} />
         </Link>
       );
     }
@@ -138,7 +139,7 @@ class MenuList extends Component {
       <MenuItem
         key={fullId}
         onSelect={onSelect}
-        message={`menu.${fullId}`}
+        message={messageId || `menu.${fullId}`}
         defaultMessage={defaultMessage}
         active={active}
         icon={icon}

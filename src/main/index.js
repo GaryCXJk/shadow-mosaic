@@ -4,16 +4,14 @@ import { app } from 'electron';
 import installExtension, {
   REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS,
 } from 'electron-devtools-installer';
-import ConfigManager from 'common/ConfigManager';
-import WindowManager from 'common/WindowManager';
-
-global.ConfigManager = ConfigManager;
-global.WindowManager = WindowManager;
-
-installExtension(REACT_DEVELOPER_TOOLS);
-installExtension(REDUX_DEVTOOLS);
+import WindowManager from 'common/helpers/WindowManager';
+import ConfigManager from './helpers/ConfigManager';
 
 function createMainWindow() {
+  Promise.all([
+    installExtension(REACT_DEVELOPER_TOOLS),
+    installExtension(REDUX_DEVTOOLS),
+  ]).then();
   ConfigManager.load();
 
   const window = WindowManager.create('main');

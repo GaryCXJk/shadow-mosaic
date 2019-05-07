@@ -2,8 +2,8 @@
 import { ipcRenderer } from 'electron';
 import { applyMiddleware, compose, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import ConfigManager from 'common/ConfigManager';
-import { isDevelopment } from '@/constants/general';
+import { isDevelopment } from 'common/constants/general';
+import ConfigManager from '@helpers/ConfigManager';
 import reducer from './reducers';
 import saga from './sagas';
 import { APP_INIT } from './actions/app';
@@ -37,7 +37,6 @@ const initializeStore = () => {
   const newState = ConfigManager.get();
 
   if (newState) {
-    console.log(newState);
     store.dispatch({
       type: APP_INIT,
       state: newState,

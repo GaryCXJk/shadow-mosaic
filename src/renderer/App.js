@@ -3,7 +3,7 @@ import { HashRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Menus from '@pages/Menus';
 import Routes from '@pages/Routes';
-import configureStore from 'common/store';
+import configureStore from './store';
 import GlobalStyle from './containers/GlobalStyle';
 import Language from './containers/Language';
 import PageContainer from './components/PageContainer';

@@ -7,7 +7,7 @@ import {
   FiMinus,
   FiX,
 } from 'react-icons/fi';
-import WindowManager from '@helpers/WindowManager';
+import WindowManager from 'common/helpers/WindowManager';
 import MenuBar from './MenuBar';
 import MenuDrag from './MenuDrag';
 import MenuList from './MenuList';

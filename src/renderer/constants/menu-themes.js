@@ -15,7 +15,8 @@ const showThemes = () => {
   Object.keys(themes).forEach((themeKey) => {
     const theme = themes[themeKey];
     const item = {
-      id: theme.nameId,
+      id: themeKey,
+      messageId: theme.nameId,
       defaultMessage: theme.name,
       icon: currentTheme === themeKey ? <FiCheck /> : true,
       action: () => {

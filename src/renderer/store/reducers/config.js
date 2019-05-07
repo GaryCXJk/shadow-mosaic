@@ -1,4 +1,4 @@
-import { languageShort } from '@/constants/general';
+import { languageShort } from 'common/constants/general';
 import {
   CONFIG_INIT,
   CONFIG_SET_THEME,
