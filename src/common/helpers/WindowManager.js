@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, remote } from 'electron';
+import { BrowserWindow, remote, app } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
 import { isDevelopment } from 'common/constants/general';
@@ -29,6 +29,7 @@ const setWindowManager = () => {
         const windowOptions = {
           webPreferences: {
             nodeIntegration: true,
+            webSecurity: false,
           },
           frame: false,
         };
@@ -62,11 +63,13 @@ const setWindowManager = () => {
           }
           window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}${location}`);
         } else {
-          window.loadURL(formatUrl({
-            pathname: path.join(__dirname, `index.html${location}`),
-            protocol: 'file',
-            slashes: true,
-          }));
+          app.on('ready', () => {
+            window.loadURL(formatUrl({
+              pathname: path.join(__dirname, `index.html${location}`),
+              protocol: 'file',
+              slashes: true,
+            }));
+          });
         }
         return windows[windowName];
       }

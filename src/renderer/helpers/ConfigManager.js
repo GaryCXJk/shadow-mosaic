@@ -1,5 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ipcRenderer } from 'electron';
+import {
+  EVENT_CONFIG_MANAGER_LOAD,
+  EVENT_CONFIG_MANAGER_GET,
+  EVENT_CONFIG_MANAGER_SET,
+} from 'common/constants/events';
 
 /**
  * Manages the configuration.
@@ -9,7 +14,7 @@ class ConfigManager {
    * Loads the configuration file.
    */
   static load() {
-    ipcRenderer.send('config-manager-load');
+    ipcRenderer.send(EVENT_CONFIG_MANAGER_LOAD);
   }
 
   /**
@@ -18,14 +23,14 @@ class ConfigManager {
    * data immediately instead of having to wait for it.
    */
   static get() {
-    return ipcRenderer.sendSync('config-manager-get');
+    return ipcRenderer.sendSync(EVENT_CONFIG_MANAGER_GET);
   }
 
   /**
    * Sets a new configuration state. This is purely meant for the renderer.
    */
   static set(state) {
-    ipcRenderer.send('config-manager-set', state);
+    ipcRenderer.send(EVENT_CONFIG_MANAGER_SET, state);
   }
 }
 

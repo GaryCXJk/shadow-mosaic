@@ -1,11 +1,18 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { languageShort } from 'common/constants/general';
+import {
+  EVENT_CONFIG_MANAGER_LOAD,
+  EVENT_CONFIG_MANAGER_GET,
+  EVENT_CONFIG_MANAGER_SET,
+} from 'common/constants/events';
 import WindowManager from 'common/helpers/WindowManager';
 
 // We need both fs and path to load in and save the config file.
 const fs = require('fs');
 const path = require('path');
+
+const configFile = path.join(app.getAppPath(), 'config.json');
 
 /* This variable stores the ConfigManager data, since we would only need to load
  * it once. It also stores a default configuration, in case loading the file fails.
@@ -30,7 +37,7 @@ class ConfigManager {
     if (configStore.data) {
       WindowManager.emit('store-update', configStore.data);
     }
-    fs.readFile(path.join(__static, '/config.json'), 'utf8', (err, data) => {
+    fs.readFile(configFile, 'utf8', (err, data) => {
       if (err) {
         configStore.data = configStore.defaultConfig;
       } else {
@@ -66,6 +73,16 @@ class ConfigManager {
       ...configStore.data,
       ...state,
     };
+
+    const content = JSON.stringify(configStore.data);
+
+    fs.writeFile(configFile, content, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        WindowManager.emit('store-update', configStore.data);
+      }
+    });
   }
 
   /**
@@ -74,20 +91,15 @@ class ConfigManager {
    * is currently open.
    */
   static setMain(_event, state) {
-    configStore.data = {
-      ...configStore.data,
-      ...state,
-    };
-
-    WindowManager.emit('store-update', configStore.data);
+    ConfigManager.set(state);
   }
 }
 
 /* We'll want to attach listeners to the main process for any requests that the
  * renderers send.
  */
-ipcMain.on('config-manager-load', ConfigManager.load);
-ipcMain.on('config-manager-get', ConfigManager.getMain);
-ipcMain.on('config-manager-set', ConfigManager.setMain);
+ipcMain.on(EVENT_CONFIG_MANAGER_LOAD, ConfigManager.load);
+ipcMain.on(EVENT_CONFIG_MANAGER_GET, ConfigManager.getMain);
+ipcMain.on(EVENT_CONFIG_MANAGER_SET, ConfigManager.setMain);
 
 export default ConfigManager;
