@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
-import WindowManager from 'common/helpers/WindowManager';
+import WindowManager from '@helpers/WindowManager';
 import MenuDivider from './MenuDivider';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
@@ -21,16 +21,18 @@ class MenuList extends Component {
     this.onWindowClose = this.onWindowClose.bind(this);
     this.onClose = this.onClose.bind(this);
     this.addItem = this.addItem.bind(this);
-    this.window = WindowManager.get('main');
 
     this.lastClicked = null;
   }
 
   componentDidMount() {
+    const { window: w } = this.props;
     window.addEventListener('click', this.onWindowClick);
     window.addEventListener('blur', this.onWindowClick);
-    this.window.on('focus', this.onWindowClick);
-    this.window.on('close', this.onWindowClose);
+    if (w) {
+      WindowManager.on(w, 'focus', this.onWindowClick);
+      WindowManager.on(w, 'close', this.onWindowClose);
+    }
   }
 
   componentWillUnmount() {
@@ -39,7 +41,7 @@ class MenuList extends Component {
     this.onWindowClose();
   }
 
-  onWindowClick(event) {
+  onWindowClick(event = {}) {
     let { target } = event;
     while (target && target !== this.lastClicked) {
       target = target.parentNode;
@@ -50,8 +52,11 @@ class MenuList extends Component {
   }
 
   onWindowClose() {
-    this.window.off('focus', this.onWindowClick);
-    this.window.off('close', this.onWindowClose);
+    const { window: w } = this.props;
+    if (w) {
+      WindowManager.off(w, 'focus', this.onWindowClick);
+      WindowManager.off(w, 'close', this.onWindowClose);
+    }
   }
 
   onClose() {
@@ -95,6 +100,8 @@ class MenuList extends Component {
       location = null,
       icon = null,
     } = option;
+
+    const w = option.window || '';
     const { onToggleItem } = this;
 
     const fullId = prefix ? `${prefix}.${id || `dv_${index}`}` : id || `dv_${index}`;
@@ -108,7 +115,7 @@ class MenuList extends Component {
 
     if (options && active) {
       const realOptions = (options && {}.toString.call(options) === '[object Function]' ? options() : options);
-      children.push(<MenuList key={`${fullId}._`} options={realOptions} prefix={fullId} onClose={this.onClose} />);
+      children.push(<MenuList key={`${fullId}._`} options={realOptions} prefix={fullId} onClose={this.onClose} window={w} />);
     }
 
     if (action) {
@@ -170,6 +177,7 @@ MenuList.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape(),
   ).isRequired,
+  window: PropTypes.string,
   onChange: PropTypes.func,
   onClose: PropTypes.func,
 };
@@ -177,6 +185,7 @@ MenuList.propTypes = {
 MenuList.defaultProps = {
   root: false,
   prefix: '',
+  window: '',
   onChange: null,
   onClose: null,
 };

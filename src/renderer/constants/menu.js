@@ -1,4 +1,4 @@
-import WindowManager from 'common/helpers/WindowManager';
+import WindowManager from '@helpers/WindowManager';
 import showThemes from './menu-themes';
 
 export default [
@@ -23,7 +23,7 @@ export default [
         id: 'exit',
         defaultMessage: 'Exit',
         action: () => {
-          WindowManager.get('main').close();
+          WindowManager.close('main');
         },
       },
     ],

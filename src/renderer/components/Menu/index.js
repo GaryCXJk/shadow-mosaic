@@ -7,7 +7,7 @@ import {
   FiMinus,
   FiX,
 } from 'react-icons/fi';
-import WindowManager from 'common/helpers/WindowManager';
+import WindowManager from '@helpers/WindowManager';
 import MenuBar from './MenuBar';
 import MenuDrag from './MenuDrag';
 import MenuList from './MenuList';
@@ -34,9 +34,10 @@ class Menu extends Component {
 
   componentDidMount() {
     const { window: w } = this.props;
-    const currentWindow = WindowManager.get(w);
-    currentWindow.on('resize', this.onResize);
-    currentWindow.on('close', this.onWindowClose);
+    if (w) {
+      WindowManager.on(w, 'resize', this.onResize);
+      WindowManager.on(w, 'close', this.onWindowClose);
+    }
   }
 
   componentWillUnmount() {
@@ -45,9 +46,10 @@ class Menu extends Component {
 
   onWindowClose() {
     const { window: w } = this.props;
-    const currentWindow = WindowManager.get(w);
-    currentWindow.off('resize', this.onResize);
-    currentWindow.off('close', this.onWindowClose);
+    if (w) {
+      WindowManager.off(w, 'resize', this.onResize);
+      WindowManager.off(w, 'close', this.onWindowClose);
+    }
   }
 
   onMenuChanged(value) {
@@ -62,7 +64,9 @@ class Menu extends Component {
 
   onMinimize() {
     const { window: w } = this.props;
-    WindowManager.get(w).minimize();
+    if (w) {
+      WindowManager.minimize(w);
+    }
   }
 
   /**
@@ -70,17 +74,16 @@ class Menu extends Component {
    */
   onMaximize() {
     const { window: w } = this.props;
-    const currentWindow = WindowManager.get(w);
-    if (currentWindow.isMaximized()) {
-      currentWindow.unmaximize();
-    } else {
-      currentWindow.maximize();
+    if (w) {
+      WindowManager.maximize(w);
     }
   }
 
   onClose() {
     const { window: w, onClose } = this.props;
-    WindowManager.get(w).close();
+    if (w) {
+      WindowManager.close(w);
+    }
     if (onClose) {
       onClose();
     }
@@ -97,14 +100,13 @@ class Menu extends Component {
     } = this.props;
     const { open } = this.state;
 
-    const currentWindow = WindowManager.get(w);
-    const isMaximized = currentWindow.isMaximized();
-    const maximize = canMaximize && currentWindow.isResizable();
+    const isMaximized = WindowManager.callMethod(w, 'isMaximized');
+    const maximize = canMaximize && WindowManager.callMethod(w, 'isResizable');
 
     return (
       <MenuBar>
         <MenuDrag isVisible={!open} />
-        {menu ? <MenuList options={menu} onChange={this.onMenuChanged} root /> : ''}
+        {menu ? <MenuList options={menu} onChange={this.onMenuChanged} window={w} root /> : ''}
         <MenuTitle>{titleId ? <FormattedMessage id={titleId} defaultMessage={title || ''} /> : title || ''}</MenuTitle>
         {canMinimalize ? <MenuButton onClick={this.onMinimize}><FiMinus /></MenuButton> : ''}
         {maximize ? (

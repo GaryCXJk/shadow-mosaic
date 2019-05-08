@@ -2,8 +2,23 @@ const EVENT_CONFIG_MANAGER_LOAD = 'config-manager-load';
 const EVENT_CONFIG_MANAGER_GET = 'config-manager-get';
 const EVENT_CONFIG_MANAGER_SET = 'config-manager-set';
 
+const EVENT_WINDOW_MANAGER_CREATE = 'window-manager-create';
+const EVENT_WINDOW_MANAGER_DESTROY = 'window-manager-destroy';
+const EVENT_WINDOW_MANAGER_MINIMIZE = 'window-manager-minimize';
+const EVENT_WINDOW_MANAGER_MAXIMIZE = 'window-manager-maximize';
+const EVENT_WINDOW_MANAGER_CLOSE = 'window-manager-close';
+const EVENT_WINDOW_MANAGER_ADD_LISTENER = 'window-manager-add-listener';
+const EVENT_WINDOW_MANAGER_CALL_METHOD = 'window-manager-call-method';
+
 export {
   EVENT_CONFIG_MANAGER_LOAD,
   EVENT_CONFIG_MANAGER_GET,
   EVENT_CONFIG_MANAGER_SET,
+  EVENT_WINDOW_MANAGER_CREATE,
+  EVENT_WINDOW_MANAGER_DESTROY,
+  EVENT_WINDOW_MANAGER_MINIMIZE,
+  EVENT_WINDOW_MANAGER_MAXIMIZE,
+  EVENT_WINDOW_MANAGER_CLOSE,
+  EVENT_WINDOW_MANAGER_ADD_LISTENER,
+  EVENT_WINDOW_MANAGER_CALL_METHOD,
 };
