@@ -110,7 +110,7 @@ class WindowManager {
     if (windows[windowName]) {
       windows[windowName].close();
 
-      if (!windows[windowName].closed) {
+      if (windows[windowName] && !windows[windowName].closed) {
         windows[windowName].destroy();
       }
     }
