@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import Menus from '@components/pages/Menus';
 
 const mapStateToProps = (state) => {
   const { config } = state;
@@ -10,4 +9,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Menus);
+const watchTheme = ThemedComponent => connect(mapStateToProps)(ThemedComponent);
+
+export default watchTheme;

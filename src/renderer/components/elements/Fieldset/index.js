@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import watchTheme from '@hoc/watchTheme';
 import FieldsetBlock from './FieldsetBlock';
 import FieldsetLegend from './FieldsetLegend';
 
@@ -31,4 +32,4 @@ Fieldset.defaultProps = {
   defaultMessage: null,
 };
 
-export default Fieldset;
+export default watchTheme(Fieldset);

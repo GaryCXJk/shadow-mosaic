@@ -30,6 +30,7 @@ const config = {
           ['@layout', path.resolve(__dirname, 'src/renderer/components/layout')],
           ['@pages', path.resolve(__dirname, 'src/renderer/components/pages')],
           ['@containers', path.resolve(__dirname, 'src/renderer/containers')],
+          ['@hoc', path.resolve(__dirname, 'src/renderer/containers/hoc')],
           ['@constants', path.resolve(__dirname, 'src/renderer/constants')],
           ['@helpers', path.resolve(__dirname, 'src/renderer/helpers')],
           ['@themes', path.resolve(__dirname, 'src/renderer/themes')],

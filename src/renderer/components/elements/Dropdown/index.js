@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import watchTheme from '@hoc/watchTheme';
 import DropdownContainer from './DropdownContainer';
 import DropdownInput from './DropdownInput';
 
@@ -37,4 +38,4 @@ class Dropdown extends Component {
   }
 }
 
-export default Dropdown;
+export default watchTheme(Dropdown);
