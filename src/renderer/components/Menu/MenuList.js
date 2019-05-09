@@ -2,12 +2,12 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
+import Icon from '@elements/Icon';
 import WindowManager from '@helpers/WindowManager';
 import MenuDivider from './MenuDivider';
 import MenuDropdown from './MenuDropdown';
 import MenuItem from './MenuItem';
 import MenuButton from './MenuButton';
-import MenuIcon from './MenuIcon';
 
 class MenuList extends Component {
   constructor(props) {
@@ -128,7 +128,7 @@ class MenuList extends Component {
       };
       return (
         <MenuButton key={fullId} onClick={fullAction}>
-          {icon && <MenuIcon icon={icon} />}
+          {icon && <Icon icon={icon} />}
           <FormattedMessage id={messageId || `menu.${fullId}`} defaultMessage={defaultMessage} />
         </MenuButton>
       );

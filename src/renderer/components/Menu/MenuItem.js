@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import Icon from '@elements/Icon';
 import MenuButton from './MenuButton';
-import MenuIcon from './MenuIcon';
 
 const MenuItem = ({
   onSelect,
@@ -13,7 +13,7 @@ const MenuItem = ({
   children,
 }) => (
   <MenuButton onClick={onSelect} onMouseEnter={onSelect} className={active ? 'active' : ''}>
-    {icon && <MenuIcon icon={icon} />}
+    {icon && <Icon icon={icon} />}
     <FormattedMessage id={message} defaultMessage={defaultMessage} />
     { children }
   </MenuButton>

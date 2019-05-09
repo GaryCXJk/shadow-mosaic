@@ -23,4 +23,5 @@ export default {
   'menu.help.about': 'About',
   'dashboard.recent_projects': 'Recent projects',
   'help.about': 'About Shadow Mosaic',
+  'settings.title': 'Settings',
 };

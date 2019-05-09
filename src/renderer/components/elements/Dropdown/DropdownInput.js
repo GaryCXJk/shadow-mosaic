@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 const DropdownInput = styled.div`
 ${({ theme }) => `
+font-size: 14px;
 padding: 10px 15px;
 background-color: ${theme.form.input.backgroundColor};
 color: ${theme.form.input.textColor};

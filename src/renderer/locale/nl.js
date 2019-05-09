@@ -12,4 +12,5 @@ export default {
   'theme.dark': 'Donker',
   'theme.light': 'Licht',
   'dashboard.recent_projects': 'Recente projecten',
+  'settings.title': 'Instellingen',
 };

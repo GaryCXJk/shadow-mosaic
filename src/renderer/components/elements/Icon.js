@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-const MenuIconBase = ({ icon, ...props }) => (
+const IconBase = ({ icon, ...props }) => (
   <div {...props}>
     {(icon !== true && icon) || ''}
   </div>
 );
 
-const MenuIcon = styled(MenuIconBase)`
+const Icon = styled(IconBase)`
 width: 1em;
 height: 1em;
 display: inline-block;
@@ -17,15 +17,15 @@ vertical-align: middle;
 margin-right: 4px;
 `;
 
-MenuIconBase.propTypes = {
+IconBase.propTypes = {
   icon: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.bool,
   ]),
 };
 
-MenuIconBase.defaultProps = {
+IconBase.defaultProps = {
   icon: false,
 };
 
-export default MenuIcon;
+export default Icon;

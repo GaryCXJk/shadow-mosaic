@@ -12,6 +12,7 @@ display: flex;
 flex-direction: column;
 min-width: 100px;
 box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.5);
+z-index: 100;
 `}
 `;
 

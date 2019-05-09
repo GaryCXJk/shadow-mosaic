@@ -2,7 +2,6 @@ import React from 'react';
 import Fieldset from '@elements/Fieldset';
 import GridContainer from '@layout/GridContainer';
 import GridCell from '@layout/GridCell';
-import Dropdown from '@elements/Dropdown';
 
 const Dashboard = () => (
   <GridContainer
@@ -35,7 +34,7 @@ const Dashboard = () => (
         padding: '15px',
       }}
     >
-      <Dropdown />
+      Right
     </GridCell>
   </GridContainer>
 );
