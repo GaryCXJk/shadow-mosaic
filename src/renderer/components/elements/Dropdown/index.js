@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import watchTheme from '@hoc/watchTheme';
+import watchSettings from '@hoc/watchSettings';
 import DropdownContainer from './DropdownContainer';
 import DropdownInput from './DropdownInput';
 import DropdownList from './DropdownList';
@@ -116,4 +116,4 @@ Dropdown.defaultProps = {
   onChange: null,
 };
 
-export default watchTheme(Dropdown);
+export default watchSettings(Dropdown);

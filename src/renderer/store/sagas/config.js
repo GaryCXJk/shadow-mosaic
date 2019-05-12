@@ -1,7 +1,7 @@
 import {
   all, call, select, takeEvery,
 } from 'redux-saga/effects';
-import { CONFIG_SET_THEME } from '@store/actions/config';
+import { CONFIG_SET_THEME, CONFIG_SAVE } from '@store/actions/config';
 import ConfigManager from '@helpers/ConfigManager';
 
 function* setTheme() {
@@ -12,9 +12,17 @@ function* setTheme() {
   });
 }
 
+function* setConfig(state) {
+  const { config } = state;
+  yield call(ConfigManager.set, {
+    config,
+  });
+}
+
 function* configSaga() {
   yield all([
     takeEvery(CONFIG_SET_THEME, setTheme),
+    takeEvery(CONFIG_SAVE, setConfig),
   ]);
 }
 

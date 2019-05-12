@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import watchTheme from '@hoc/watchTheme';
+import watchSettings from '@hoc/watchSettings';
 import GeneralMenu from './GeneralMenu';
 import AboutTitleBar from './AboutTitleBar';
 import SettingsTitleBar from './SettingsTitleBar';
@@ -13,4 +13,4 @@ const Menus = () => (
   </Switch>
 );
 
-export default watchTheme(Menus);
+export default watchSettings(Menus);

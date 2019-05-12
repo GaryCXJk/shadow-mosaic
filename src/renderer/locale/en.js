@@ -16,6 +16,8 @@ export default {
   ...languages,
   ...themeStr,
   ok: 'OK',
+  cancel: 'Cancel',
+  apply: 'Apply',
   'menu.file': 'File',
   'menu.file.exit': 'Exit',
   'menu.theme': 'Theme',
@@ -24,4 +26,6 @@ export default {
   'dashboard.recent_projects': 'Recent projects',
   'help.about': 'About Shadow Mosaic',
   'settings.title': 'Settings',
+  'settings.theme': 'Theme',
+  'settings.language': 'Language',
 };

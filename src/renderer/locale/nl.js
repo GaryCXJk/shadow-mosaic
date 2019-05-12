@@ -13,4 +13,6 @@ export default {
   'theme.light': 'Licht',
   'dashboard.recent_projects': 'Recente projecten',
   'settings.title': 'Instellingen',
+  'settings.theme': 'Thema',
+  'settings.language': 'Taal',
 };
