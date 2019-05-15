@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { format as formatUrl } from 'url';
 import { validFiles } from 'common/constants/general';
 import MosaicTileManager from './MosaicTileManager';
 
@@ -38,7 +39,7 @@ class MosaicImage {
     this.tilemap = [];
   }
 
-  load(file) {
+  load(file, resolution = 0) {
     this.file = file;
     this.image = new Image();
     this.image.src = this.file;
@@ -49,6 +50,10 @@ class MosaicImage {
       this.image.onload = () => {
         this.width = this.width || this.image.naturalWidth;
         this.height = this.height || this.image.naturalHeight;
+        if (resolution) {
+          this.width = Math.round(this.image.naturalWidth / resolution);
+          this.height = Math.round(this.image.naturalHeight / resolution);
+        }
         resolve(this);
       };
     });
@@ -75,7 +80,7 @@ class MosaicImage {
     this.reset();
   }
 
-  analyzeImage(withPromise = false) {
+  analyzeImage(withPromise = false, onUpdate = null) {
     if (withPromise) {
       return new Promise((resolve) => {
         const res = this.analyzeImage();
@@ -100,6 +105,7 @@ class MosaicImage {
       canvas.width,
       canvas.height,
     );
+    document.querySelector('body').appendChild(canvas);
     for (let y = 0; y < this.height; y += 1) {
       for (let x = 0; x < this.width; x += 1) {
         const sourceX = Math.floor(x * (canvas.width / this.width));
@@ -114,7 +120,22 @@ class MosaicImage {
           precision: this.precision,
           spread: this.spread,
         });
+        colorData.push({
+          x,
+          y,
+          sourceX,
+          sourceY,
+          sourceWidth,
+          sourceHeight,
+        });
         this.data.push(colorData);
+
+        if (onUpdate) {
+          onUpdate({
+            index: this.data.length,
+            total: this.width * this.height,
+          });
+        }
       }
     }
     return this.data;
@@ -123,7 +144,7 @@ class MosaicImage {
   getTilemap(tiles, {
     distance = 2,
     colorMultiplier = defaultMultiplier,
-  }, onUpdate = null) {
+  } = {}, onUpdate = null) {
     const { width, tilemap } = this;
     tilemap.splice(0);
 
@@ -138,7 +159,7 @@ class MosaicImage {
         const colorsB = tiles[indexB].colors;
         const valA = compareColors(colorsA, colors, colorMultiplier);
         const valB = compareColors(colorsB, colors, colorMultiplier);
-        return valB - valA;
+        return valA - valB;
       });
 
       let colorIndex = 0;
@@ -169,7 +190,7 @@ class MosaicImage {
       this.tilemap[index] = candidates[colorIndex];
       if (onUpdate) {
         onUpdate({
-          index,
+          index: index + 1,
           total: this.data.length,
         });
       }
@@ -198,7 +219,7 @@ class MosaicImage {
     this.tilemap.forEach((cell) => {
       if (!tilesProcessed.includes(cell)) {
         const promise = new Promise(
-          this.setTilePromise.bind(this, tiles, cell, tileWidth, tileHeight, context),
+          this.setTileToImagePromise.bind(this, tiles, cell, tileWidth, tileHeight, context),
         );
         promises.push(promise);
         tilesProcessed.push(cell);
@@ -228,7 +249,11 @@ class MosaicImage {
     const { tilemap, width } = this;
 
     const image = new Image();
-    image.src = tiles[cell];
+    image.src = formatUrl({
+      pathname: tiles[cell].tile,
+      protocol: 'file',
+      slashes: true,
+    });
     image.onerror = reject;
     image.onload = () => {
       const imageWidth = image.naturalWidth;
@@ -237,7 +262,7 @@ class MosaicImage {
         if (tile === cell) {
           const x = (index % width) * tileWidth;
           const y = Math.floor(index / width) * tileHeight;
-          context.drawImage(0, 0, imageWidth, imageHeight, x, y, tileWidth, tileHeight);
+          context.drawImage(image, 0, 0, imageWidth, imageHeight, x, y, tileWidth, tileHeight);
         }
       });
       resolve();
@@ -246,10 +271,9 @@ class MosaicImage {
 }
 
 class MosaicImageHelper {
-  static loadImage(file, width = 0, height = 0) {
+  static loadImage(file, resolution = 0) {
     const image = new MosaicImage();
-    image.setSize(width, height);
-    return image.load(file);
+    return image.load(file, resolution);
   }
 }
 

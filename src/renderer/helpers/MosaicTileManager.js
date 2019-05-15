@@ -26,10 +26,12 @@ class MosaicTileManager {
     file,
     width,
     height,
+    precision = 2,
+    spread = 0,
     mode = 'cover',
     encoding = 'image/png',
     toFile = true,
-  }) {
+  } = {}) {
     // Check if the provided encoding is valid.
     if (!validEncoding[encoding]) {
       return Promise.reject();
@@ -77,7 +79,10 @@ class MosaicTileManager {
         }
 
         const imgString = canvas.toDataURL(encoding);
-        const colors = this.getColors(image);
+        const colors = this.getColors(image, {
+          precision,
+          spread,
+        });
 
         if (toFile) {
           const timestamp = (new Date()).getTime();
@@ -116,17 +121,17 @@ class MosaicTileManager {
     height = 0,
     precision = 2,
     spread = 0,
-  }) {
+  } = {}) {
     const testCanvas = document.createElement('canvas');
     testCanvas.width = 1;
     testCanvas.height = 1;
     const context = testCanvas.getContext('2d');
-    const realWidth = (width || canvas.width) - x;
-    const realHeight = (height || canvas.height) - y;
+    const realWidth = (width || canvas.width - x);
+    const realHeight = (height || canvas.height - y);
     const colors = [];
     const segments = +precision + +spread;
-    for (let posY = 0; posY < segments; posY += 1) {
-      for (let posX = 0; posX < segments; posX += 1) {
+    for (let posY = 0; posY < precision; posY += 1) {
+      for (let posX = 0; posX < precision; posX += 1) {
         const sourceX = Math.floor(posX * (realWidth / segments));
         const sourceY = Math.floor(posY * (realHeight / segments));
         const sourceWidth = Math.floor((posX + 1 + spread) * (realWidth / segments)) - sourceX;
