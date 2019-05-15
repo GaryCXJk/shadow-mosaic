@@ -33,7 +33,9 @@ class SettingsButtons extends Component {
     return (
       <SettingsButtonsContainer>
         <Button onClick={this.onOK}><FormattedMessage id="ok" defaultMessage="OK" /></Button>
+        {' '}
         <Button onClick={onSave}><FormattedMessage id="apply" defaultMessage="Apply" /></Button>
+        {' '}
         <Button onClick={closeWindow}><FormattedMessage id="cancel" defaultMessage="Cancel" /></Button>
       </SettingsButtonsContainer>
     );
