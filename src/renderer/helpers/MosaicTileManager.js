@@ -3,12 +3,9 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { format as formatUrl } from 'url';
+import { validEncoding } from 'common/constants/general';
 
-const validEncoding = {
-  'image/png': 'png',
-  'image/jpeg': 'jpg',
-  'image/webp': 'webp',
-};
+const tiles = [];
 
 /**
  * @typeof {Object} TileOptions The options for creating a tile.
@@ -31,6 +28,7 @@ class MosaicTileManager {
     height,
     mode = 'cover',
     encoding = 'image/png',
+    toFile = true,
   }) {
     // Check if the provided encoding is valid.
     if (!validEncoding[encoding]) {
@@ -79,30 +77,46 @@ class MosaicTileManager {
         }
 
         const imgString = canvas.toDataURL(encoding);
-        const timestamp = (new Date()).getTime();
-        const imgData = imgString.split(';base64,').pop();
+        const colors = this.getColors(image);
 
-        const imgName = `${remote.app.getName()}-${timestamp}.${validEncoding[encoding]}`;
+        if (toFile) {
+          const timestamp = (new Date()).getTime();
+          const imgData = imgString.split(';base64,').pop();
 
-        const imgOut = path.resolve(remote.app.getPath('temp'), imgName);
+          const imgName = `${remote.app.getName()}-${timestamp}.${validEncoding[encoding]}`;
 
-        fs.writeFile(imgOut, imgData, {
-          encoding: 'base64',
-        }, (err) => {
-          if (err) {
-            reject(err);
-          }
-          const colors = this.getColors(image);
+          const imgOut = path.resolve(remote.app.getPath('temp'), imgName);
+
+          fs.writeFile(imgOut, imgData, {
+            encoding: 'base64',
+          }, (err) => {
+            if (err) {
+              reject(err);
+            }
+            tiles.push(imgOut);
+            resolve({
+              tile: imgOut,
+              colors,
+            });
+          });
+        } else {
           resolve({
-            thumb: imgOut,
+            tile: imgString,
             colors,
           });
-        });
+        }
       };
     });
   }
 
-  static getColors(canvas, x = 0, y = 0, width = 0, height = 0) {
+  static getColors(canvas, {
+    x = 0,
+    y = 0,
+    width = 0,
+    height = 0,
+    precision = 2,
+    spread = 0,
+  }) {
     const testCanvas = document.createElement('canvas');
     testCanvas.width = 1;
     testCanvas.height = 1;
@@ -110,18 +124,29 @@ class MosaicTileManager {
     const realWidth = (width || canvas.width) - x;
     const realHeight = (height || canvas.height) - y;
     const colors = [];
-    for (let posY = 0; posY < 2; posY += 1) {
-      for (let posX = 0; posX < 2; posX += 1) {
-        const sourceX = Math.floor(posX * (realWidth / 2));
-        const sourceY = Math.floor(posY * (realHeight / 2));
-        const sourceWidth = Math.floor((posX + 1) * (realWidth / 2)) - sourceX;
-        const sourceHeight = Math.floor((posY + 1) * (realWidth / 2)) - sourceY;
+    const segments = +precision + +spread;
+    for (let posY = 0; posY < segments; posY += 1) {
+      for (let posX = 0; posX < segments; posX += 1) {
+        const sourceX = Math.floor(posX * (realWidth / segments));
+        const sourceY = Math.floor(posY * (realHeight / segments));
+        const sourceWidth = Math.floor((posX + 1 + spread) * (realWidth / segments)) - sourceX;
+        const sourceHeight = Math.floor((posY + 1 + spread) * (realWidth / segments)) - sourceY;
         context.drawImage(canvas, sourceX + x, sourceY + y, sourceWidth, sourceHeight, 0, 0, 1, 1);
         const color = context.getImageData(0, 0, 1, 1).data;
         colors.push(color.slice(0, 3));
       }
     }
     return colors;
+  }
+
+  static cleanup() {
+    tiles.forEach((tile) => {
+      fs.unlink(tile, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    });
   }
 }
 
