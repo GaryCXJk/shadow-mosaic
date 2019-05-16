@@ -80,13 +80,7 @@ class MosaicImage {
     this.reset();
   }
 
-  analyzeImage(withPromise = false, onUpdate = null) {
-    if (withPromise) {
-      return new Promise((resolve) => {
-        const res = this.analyzeImage();
-        resolve(res);
-      });
-    }
+  initAnalyzeImage() {
     this.reset();
     const realWidth = this.image.naturalWidth;
     const realHeight = this.image.naturalHeight;
@@ -105,31 +99,20 @@ class MosaicImage {
       canvas.width,
       canvas.height,
     );
-    document.querySelector('body').appendChild(canvas);
+    return canvas;
+  }
+
+  analyzeImage(withPromise = false, onUpdate = null) {
+    if (withPromise) {
+      return new Promise((resolve) => {
+        const res = this.analyzeImage();
+        resolve(res);
+      });
+    }
+    const canvas = this.initAnalyzeImage();
     for (let y = 0; y < this.height; y += 1) {
       for (let x = 0; x < this.width; x += 1) {
-        const sourceX = Math.floor(x * (canvas.width / this.width));
-        const sourceY = Math.floor(y * (canvas.height / this.height));
-        const sourceWidth = Math.floor((x + 1) * (canvas.width / this.width)) - sourceX;
-        const sourceHeight = Math.floor((y + 1) * (canvas.height / this.height)) - sourceY;
-        const colorData = MosaicTileManager.getColors(canvas, {
-          x: sourceX,
-          y: sourceY,
-          width: sourceWidth,
-          height: sourceHeight,
-          precision: this.precision,
-          spread: this.spread,
-        });
-        colorData.push({
-          x,
-          y,
-          sourceX,
-          sourceY,
-          sourceWidth,
-          sourceHeight,
-        });
-        this.data.push(colorData);
-
+        this.analyzeImageTile(canvas, x, y);
         if (onUpdate) {
           onUpdate({
             index: this.data.length,
@@ -141,60 +124,101 @@ class MosaicImage {
     return this.data;
   }
 
-  getTilemap(tiles, {
+  analyzeImageTile(canvas, x, y, toData = true) {
+    const sourceX = Math.floor(x * (canvas.width / this.width));
+    const sourceY = Math.floor(y * (canvas.height / this.height));
+    const sourceWidth = Math.floor((x + 1) * (canvas.width / this.width)) - sourceX;
+    const sourceHeight = Math.floor((y + 1) * (canvas.height / this.height)) - sourceY;
+    const colorData = MosaicTileManager.getColors(canvas, {
+      x: sourceX,
+      y: sourceY,
+      width: sourceWidth,
+      height: sourceHeight,
+      precision: this.precision,
+      spread: this.spread,
+    });
+    colorData.push({
+      x,
+      y,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+    });
+    const index = x + y * this.width;
+    if (toData) {
+      this.data[index] = colorData;
+    }
+    return colorData;
+  }
+
+  getTileMatch(tiles, x, y, {
     distance = 2,
     colorMultiplier = defaultMultiplier,
-  } = {}, onUpdate = null) {
-    const { width, tilemap } = this;
+  } = {}, toTilemap = true) {
+    const { width, tilemap, data } = this;
+    const index = x + y * this.width;
+    const colors = data[index];
+    const candidates = tiles.map((_value, candidateIndex) => candidateIndex);
+    candidates.sort((indexA, indexB) => {
+      const colorsA = tiles[indexA].colors;
+      const colorsB = tiles[indexB].colors;
+      const valA = compareColors(colorsA, colors, colorMultiplier);
+      const valB = compareColors(colorsB, colors, colorMultiplier);
+      return valA - valB;
+    });
+
+    let colorIndex = 0;
+    let usable = false;
+
+    while (colorIndex < candidates.length && !usable) {
+      usable = true;
+      for (let distY = -distance; distY <= distance; distY += 1) {
+        for (let distX = -distance; distX <= distance; distX += 1) {
+          if (distX !== 0 || distY !== 0) {
+            const compareIndex = index + distX + distY * width;
+            if (
+              compareIndex >= 0
+              && compareIndex < tilemap.length
+              && typeof tilemap[compareIndex] !== 'undefined'
+              && tilemap[compareIndex] === candidates[colorIndex]) {
+              colorIndex += 1;
+              usable = false;
+            }
+          }
+        }
+      }
+    }
+
+    if (!usable) {
+      colorIndex = 0;
+    }
+    if (toTilemap) {
+      this.tilemap[index] = candidates[colorIndex];
+    }
+    return candidates[colorIndex];
+  }
+
+  getTilemap(tiles, options = {}, onUpdate = null) {
+    const { tilemap } = this;
     tilemap.splice(0);
 
     if (this.data.length === 0) {
       this.analyzeImage();
     }
 
-    this.data.forEach((colors, index) => {
-      const candidates = tiles.map((_value, candidateIndex) => candidateIndex);
-      candidates.sort((indexA, indexB) => {
-        const colorsA = tiles[indexA].colors;
-        const colorsB = tiles[indexB].colors;
-        const valA = compareColors(colorsA, colors, colorMultiplier);
-        const valB = compareColors(colorsB, colors, colorMultiplier);
-        return valA - valB;
-      });
-
-      let colorIndex = 0;
-      let usable = false;
-
-      while (colorIndex < candidates.length && !usable) {
-        usable = true;
-        for (let y = -distance; y <= distance; y += 1) {
-          for (let x = -distance; x <= distance; x += 1) {
-            if (x !== 0 || y !== 0) {
-              const compareIndex = index + x + y * width;
-              if (
-                compareIndex >= 0
-                && compareIndex < tilemap.length
-                && typeof tilemap[compareIndex] !== 'undefined'
-                && tilemap[compareIndex] === candidates[colorIndex]) {
-                colorIndex += 1;
-                usable = false;
-              }
-            }
-          }
+    for (let y = 0; y < this.height; y += 1) {
+      for (let x = 0; x < this.width; x += 1) {
+        this.getTilemap(tiles, x, y, options);
+        const index = x + y * this.width;
+        if (onUpdate) {
+          onUpdate({
+            index: index + 1,
+            total: this.data.length,
+          });
         }
       }
-
-      if (!usable) {
-        colorIndex = 0;
-      }
-      this.tilemap[index] = candidates[colorIndex];
-      if (onUpdate) {
-        onUpdate({
-          index: index + 1,
-          total: this.data.length,
-        });
-      }
-    });
+    }
 
     return this.tilemap;
   }
